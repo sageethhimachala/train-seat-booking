@@ -4,6 +4,8 @@ import {
   formatDirection,
 } from "../utils/formatters";
 
+import CopyButton from "./CopyButton";
+
 export default function BookingDetails({ booking, cancelling, onCancel }) {
   if (!booking) {
     return null;
@@ -17,7 +19,11 @@ export default function BookingDetails({ booking, cancelling, onCancel }) {
         <div>
           <span className="eyebrow">Booking details</span>
 
-          <h2>{booking.booking_reference}</h2>
+          <div className="booking-reference-heading">
+            <h2>{booking.booking_reference}</h2>
+
+            <CopyButton value={booking.booking_reference} label="Copy" />
+          </div>
         </div>
 
         <span

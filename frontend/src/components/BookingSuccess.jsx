@@ -1,5 +1,7 @@
 import { formatCurrency, formatDateTime } from "../utils/formatters";
 
+import CopyButton from "./CopyButton";
+
 export default function BookingSuccess({
   booking,
   onBookAnother,
@@ -23,8 +25,13 @@ export default function BookingSuccess({
       </p>
 
       <div className="booking-reference">
-        <span>Booking reference</span>
-        <strong>{booking.booking_reference}</strong>
+        <div className="booking-reference-content">
+          <span>Booking reference</span>
+
+          <strong>{booking.booking_reference}</strong>
+        </div>
+
+        <CopyButton value={booking.booking_reference} label="Copy reference" />
       </div>
 
       <div className="confirmation-grid">

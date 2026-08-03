@@ -1027,3 +1027,83 @@ button:disabled {
     width: 100%;
   }
 }
+
+.booking-reference {
+  margin: 24px auto;
+  max-width: 520px;
+  padding: 18px;
+  border: 1px dashed #7da99c;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18px;
+  background: #f3faf7;
+  text-align: left;
+}
+
+.booking-reference-content {
+  display: grid;
+  gap: 6px;
+}
+
+.booking-reference-content span {
+  color: #6f7b8e;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+}
+
+.booking-reference-content strong {
+  font-size: 1.4rem;
+  letter-spacing: 0.08em;
+}
+
+.copy-button {
+  min-height: 39px;
+  border: 1px solid #19745f;
+  border-radius: 9px;
+  padding: 0 14px;
+  background: white;
+  color: #19745f;
+  font-weight: 800;
+}
+
+.copy-button:hover {
+  background: #eaf7f2;
+}
+
+@media (max-width: 480px) {
+  .booking-reference {
+    flex-direction: column;
+    align-items: stretch;
+    text-align: center;
+  }
+
+  .copy-button {
+    width: 100%;
+  }
+
+  .booking-reference-heading {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .booking-reference-heading .copy-button {
+    width: 100%;
+  }
+}
+
+.booking-reference-heading {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.booking-reference-heading h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  letter-spacing: 0.05em;
+  word-break: break-word;
+}
