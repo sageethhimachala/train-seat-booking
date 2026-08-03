@@ -28,7 +28,12 @@ export default function TripSummary({ availability }) {
       <div className="trip-route">
         <div className="route-station">
           <span className="route-label">From</span>
-          <strong>{availability.origin_station_name}</strong>
+          <strong>
+            {
+              availability.available_seats.filter((seat) => seat.is_available)
+                .length
+            }
+          </strong>
         </div>
 
         <div className="route-line">

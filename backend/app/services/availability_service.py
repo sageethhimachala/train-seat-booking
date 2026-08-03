@@ -139,7 +139,6 @@ def get_available_seats_for_trip(
     origin: Station,
     destination: Station,
 ) -> list[AvailableSeatResponse]:
-
     requested_start = min(
         origin.order_index,
         destination.order_index,
@@ -149,8 +148,6 @@ def get_available_seats_for_trip(
         origin.order_index,
         destination.order_index,
     )
-
-    # Consider as SQL statement
 
     existing_origin = Station.__table__.alias(
         "existing_origin"
@@ -174,11 +171,13 @@ def get_available_seats_for_trip(
         select(Booking.id)
         .join(
             existing_origin,
-            Booking.origin_station_id == existing_origin.c.id,
+            Booking.origin_station_id
+            == existing_origin.c.id,
         )
         .join(
             existing_destination,
-            Booking.destination_station_id == existing_destination.c.id,
+            Booking.destination_station_id
+            == existing_destination.c.id,
         )
         .where(
             Booking.trip_id == trip.id,
@@ -195,12 +194,18 @@ def get_available_seats_for_trip(
             Seat.seat_number,
             Coach.id,
             Coach.coach_number,
+            overlapping_booking_exists.label(
+                "is_booked"
+            ),
         )
-        .join(Coach, Seat.coach_id == Coach.id)
+        .join(
+            Coach,
+            Seat.coach_id == Coach.id,
+        )
         .where(
             Coach.train_id == trip.train_id,
-            Coach.coach_type == CoachType.RESERVED,
-            ~overlapping_booking_exists,
+            Coach.coach_type
+            == CoachType.RESERVED,
         )
         .order_by(
             Coach.coach_number,
@@ -216,15 +221,16 @@ def get_available_seats_for_trip(
             seat_number=seat_number,
             coach_id=coach_id,
             coach_number=coach_number,
+            is_available=not is_booked,
         )
         for (
             seat_id,
             seat_number,
             coach_id,
             coach_number,
+            is_booked,
         ) in rows
     ]
-
 
 def search_availability(
     db: Session,
@@ -266,14 +272,19 @@ def search_availability(
         ):
             continue
 
-        available_seats = get_available_seats_for_trip(
+        seats = get_available_seats_for_trip(
             db,
             trip,
             origin,
             destination,
         )
 
-        if available_seats:
+        has_available_seat = any(
+            seat.is_available
+            for seat in seats
+        )
+
+        if has_available_seat:
             return AvailabilityResponse(
                 origin_station_id=origin.id,
                 origin_station_name=origin.name,
@@ -290,9 +301,10 @@ def search_availability(
                     departure_time=trip.departure_time,
                     arrival_time=trip.arrival_time,
                 ),
-                available_seats=available_seats,
+                available_seats=seats,
                 message=(
-                    f"{len(available_seats)} Available seats found on the earliest eligible train."
+                    "Seat availability found on the "
+                    "earliest eligible train."
                 ),
             )
 

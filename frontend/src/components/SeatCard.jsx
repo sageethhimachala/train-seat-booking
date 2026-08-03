@@ -1,11 +1,32 @@
 export default function SeatCard({ seat, selected, onSelect }) {
+  const isBooked = !seat.is_available;
+
+  function handleClick() {
+    if (isBooked) {
+      return;
+    }
+
+    onSelect(seat);
+  }
+
   return (
     <button
       type="button"
-      className={`seat-card ${selected ? "seat-card-selected" : ""}`}
-      onClick={() => onSelect(seat)}
+      className={[
+        "seat-card",
+        selected ? "seat-card-selected" : "",
+        isBooked ? "seat-card-booked" : "",
+      ]
+        .filter(Boolean)
+        .join(" ")}
+      onClick={handleClick}
+      disabled={isBooked}
       aria-pressed={selected}
-      aria-label={`Coach ${seat.coach_number}, seat ${seat.seat_number}`}
+      aria-label={
+        isBooked
+          ? `Coach ${seat.coach_number}, seat ${seat.seat_number}, booked`
+          : `Coach ${seat.coach_number}, seat ${seat.seat_number}, available`
+      }
     >
       <span className="seat-back" aria-hidden="true" />
 
@@ -18,6 +39,8 @@ export default function SeatCard({ seat, selected, onSelect }) {
           ✓
         </span>
       )}
+
+      {isBooked && <span className="seat-status-label">Booked</span>}
     </button>
   );
 }

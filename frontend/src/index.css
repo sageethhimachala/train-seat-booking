@@ -1530,3 +1530,60 @@ button:disabled {
     flex-direction: column;
   }
 }
+
+.legend-booked {
+  border-color: #b7bdc7;
+  background: #d7dbe1;
+}
+
+.seat-card-booked {
+  border-color: #c6cbd3;
+  background: repeating-linear-gradient(
+    135deg,
+    #e7e9ed,
+    #e7e9ed 8px,
+    #dfe2e7 8px,
+    #dfe2e7 16px
+  );
+  color: #858c98;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.seat-card-booked:hover {
+  transform: none;
+  border-color: #c6cbd3;
+  background: repeating-linear-gradient(
+    135deg,
+    #e7e9ed,
+    #e7e9ed 8px,
+    #dfe2e7 8px,
+    #dfe2e7 16px
+  );
+  box-shadow: none;
+}
+
+.seat-card-booked .seat-back {
+  border-color: #bfc4cc;
+  background: #cfd3d9;
+}
+
+.seat-card-booked .seat-coach-label {
+  color: #9197a1;
+}
+
+.seat-status-label {
+  margin-top: 3px;
+  padding: 3px 7px;
+  border-radius: 999px;
+  background: #747b86;
+  color: white;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.seat-card:disabled {
+  opacity: 1;
+}

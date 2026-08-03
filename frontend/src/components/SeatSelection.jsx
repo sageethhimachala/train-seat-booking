@@ -68,6 +68,11 @@ export default function SeatSelection({
           <i className="legend-seat legend-selected" />
           Selected
         </span>
+
+        <span>
+          <i className="legend-seat legend-booked" />
+          Booked
+        </span>
       </div>
 
       <div className="coach-list">
@@ -80,7 +85,10 @@ export default function SeatSelection({
                 <div>
                   <h3>Reserved Coach {coachNumber}</h3>
 
-                  <span>{seats.length} seats available</span>
+                  <span>
+                    {seats.filter((seat) => seat.is_available).length} seats
+                    available
+                  </span>
                 </div>
 
                 <span className="coach-direction">Front of train →</span>

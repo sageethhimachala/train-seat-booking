@@ -11,7 +11,7 @@ class AvailableSeatResponse(BaseModel):
     seat_number: str
     coach_id: int
     coach_number: int
-
+    is_available: bool
 
 class AvailabilityTripResponse(BaseModel):
     trip_id: int
