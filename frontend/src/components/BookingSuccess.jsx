@@ -1,6 +1,10 @@
 import { formatCurrency, formatDateTime } from "../utils/formatters";
 
-export default function BookingSuccess({ booking, onBookAnother }) {
+export default function BookingSuccess({
+  booking,
+  onBookAnother,
+  onManageBooking,
+}) {
   if (!booking) {
     return null;
   }
@@ -61,9 +65,23 @@ export default function BookingSuccess({ booking, onBookAnother }) {
         </div>
       </div>
 
-      <button type="button" className="primary-button" onClick={onBookAnother}>
-        Book another journey
-      </button>
+      <div className="success-actions">
+        <button
+          type="button"
+          className="primary-button"
+          onClick={onBookAnother}
+        >
+          Book another journey
+        </button>
+
+        <button
+          type="button"
+          className="secondary-button"
+          onClick={() => onManageBooking(booking.booking_reference)}
+        >
+          Manage this booking
+        </button>
+      </div>
     </section>
   );
 }

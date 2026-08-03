@@ -11,7 +11,7 @@ import { searchAvailability } from "../services/availabilityService";
 import { createBooking } from "../services/bookingService";
 import { getStations } from "../services/stationService";
 
-export default function BookingPage() {
+export default function BookingPage({ onManageBooking }) {
   const [stations, setStations] = useState([]);
   const [availability, setAvailability] = useState(null);
   const [selectedSeat, setSelectedSeat] = useState(null);
@@ -113,7 +113,11 @@ export default function BookingPage() {
   if (booking) {
     return (
       <main className="page-container">
-        <BookingSuccess booking={booking} onBookAnother={handleBookAnother} />
+        <BookingSuccess
+          booking={booking}
+          onBookAnother={handleBookAnother}
+          onManageBooking={onManageBooking}
+        />
       </main>
     );
   }
