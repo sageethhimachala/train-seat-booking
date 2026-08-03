@@ -1,8 +1,8 @@
-"""create initial railway tables
+"""initial database schema
 
-Revision ID: 8fba7fbc7f64
+Revision ID: 6f19d2026e4c
 Revises: 
-Create Date: 2026-08-02 09:42:33.216171
+Create Date: 2026-08-03 02:16:43.056516
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '8fba7fbc7f64'
+revision: str = '6f19d2026e4c'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -39,6 +39,10 @@ def upgrade() -> None:
     sa.Column('train_number', sa.String(length=20), nullable=False),
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.Column('boarding_minutes_before', sa.Integer(), server_default='30', nullable=False),
+    sa.Column('turnaround_minutes', sa.Integer(), server_default='60', nullable=False),
+    sa.CheckConstraint('boarding_minutes_before >= 0', name='ck_train_boarding_minutes_non_negative'),
+    sa.CheckConstraint('turnaround_minutes >= 0', name='ck_train_turnaround_minutes_non_negative'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('train_number')
     )
@@ -74,6 +78,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_trips_departure_time'), 'trips', ['departure_time'], unique=False)
     op.create_index(op.f('ix_trips_status'), 'trips', ['status'], unique=False)
     op.create_index(op.f('ix_trips_train_id'), 'trips', ['train_id'], unique=False)
+    op.create_index('uq_one_scheduled_trip_per_train', 'trips', ['train_id'], unique=True, postgresql_where=sa.text("status = 'SCHEDULED'::trip_status"))
     op.create_table('seats',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('coach_id', sa.Integer(), nullable=False),
@@ -123,6 +128,7 @@ def downgrade() -> None:
     op.drop_table('bookings')
     op.drop_index(op.f('ix_seats_coach_id'), table_name='seats')
     op.drop_table('seats')
+    op.drop_index('uq_one_scheduled_trip_per_train', table_name='trips', postgresql_where=sa.text("status = 'SCHEDULED'::trip_status"))
     op.drop_index(op.f('ix_trips_train_id'), table_name='trips')
     op.drop_index(op.f('ix_trips_status'), table_name='trips')
     op.drop_index(op.f('ix_trips_departure_time'), table_name='trips')

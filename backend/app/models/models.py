@@ -15,6 +15,7 @@ from sqlalchemy import (
     String,
     UniqueConstraint,
     func,
+    text,
 )
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -48,9 +49,25 @@ class Station(Base):
     __tablename__ = "stations"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    name: Mapped[str] = mapped_column(String(100), nullable=False, unique=True)
-    code: Mapped[str] = mapped_column(String(10), nullable=False, unique=True)
-    order_index: Mapped[int] = mapped_column(Integer, nullable=False, unique=True)
+
+    name: Mapped[str] = mapped_column(
+        String(100), 
+        nullable=False, 
+        unique=True,
+    )
+
+    code: Mapped[str] = mapped_column(
+        String(10), 
+        nullable=False, 
+        unique=True,
+    )
+
+    order_index: Mapped[int] = mapped_column(
+        Integer, 
+        nullable=False, 
+        unique=True,
+    )
+    
     distance_from_start_km: Mapped[Decimal] = mapped_column(
         Numeric(8, 2),
         nullable=False,
@@ -72,13 +89,36 @@ class Train(Base):
     __tablename__ = "trains"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+
     train_number: Mapped[str] = mapped_column(
         String(20),
         nullable=False,
         unique=True,
     )
-    name: Mapped[str] = mapped_column(String(100), nullable=False)
-    is_active: Mapped[bool] = mapped_column(default=True, nullable=False)
+
+    name: Mapped[str] = mapped_column(
+        String(100),
+        nullable=False,
+    )
+
+    is_active: Mapped[bool] = mapped_column(
+        default=True,
+        nullable=False,
+    )
+
+    boarding_minutes_before: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=30,
+        server_default="30",
+    )
+
+    turnaround_minutes: Mapped[int] = mapped_column(
+        Integer,
+        nullable=False,
+        default=60,
+        server_default="60",
+    )
 
     coaches: Mapped[list[Coach]] = relationship(
         back_populates="train",
@@ -88,6 +128,17 @@ class Train(Base):
     trips: Mapped[list[Trip]] = relationship(
         back_populates="train",
         cascade="all, delete-orphan",
+    )
+
+    __table_args__ = (
+        CheckConstraint(
+            "boarding_minutes_before >= 0",
+            name="ck_train_boarding_minutes_non_negative",
+        ),
+        CheckConstraint(
+            "turnaround_minutes >= 0",
+            name="ck_train_turnaround_minutes_non_negative",
+        ),
     )
 
 
@@ -245,6 +296,14 @@ class Trip(Base):
             "status",
             "direction",
             "departure_time",
+        ),
+        Index(
+            "uq_one_scheduled_trip_per_train",
+            "train_id",
+            unique=True,
+            postgresql_where=text(
+                "status = 'SCHEDULED'::trip_status"
+            ),
         ),
     )
 

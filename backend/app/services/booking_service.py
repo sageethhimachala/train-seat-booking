@@ -29,8 +29,7 @@ from app.schemas.booking import (
     BookingTripResponse,
 )
 
-
-FARE_PER_KM = Decimal("3.00")
+FARE_PER_KM = Decimal("3.00")               # reuse the existing functions as utils
 
 
 def generate_booking_reference() -> str:
@@ -109,7 +108,7 @@ def validate_trip_is_bookable(
             ),
         )
 
-    if trip.departure_time <= now:
+    if trip.departure_time <= now:                  # check and fix the logic - safety rule
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail=(

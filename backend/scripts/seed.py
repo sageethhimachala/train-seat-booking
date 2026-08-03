@@ -96,6 +96,8 @@ def get_future_time(hours_from_now: int) -> datetime:
 
 
 def clear_database(db: Session) -> None:
+    # Delete child records before parent records because
+    # of foreign-key relationships.
     db.execute(delete(Booking))
     db.execute(delete(Trip))
     db.execute(delete(Seat))
@@ -103,12 +105,14 @@ def clear_database(db: Session) -> None:
     db.execute(delete(Train))
     db.execute(delete(Station))
 
+    db.flush()
 
-def create_stations(db: Session) -> list[Station]:
-    stations = []
 
-    for station_data in STATIONS:
-        station = Station(
+def create_stations(
+    db: Session,
+) -> list[Station]:
+    stations = [
+        Station(
             name=station_data["name"],
             code=station_data["code"],
             order_index=station_data["order_index"],
@@ -116,8 +120,8 @@ def create_stations(db: Session) -> list[Station]:
                 station_data["distance"]
             ),
         )
-
-        stations.append(station)
+        for station_data in STATIONS
+    ]
 
     db.add_all(stations)
     db.flush()
@@ -132,6 +136,12 @@ def create_train_with_coaches_and_seats(
         train_number="1005",
         name="Podi Menike",
         is_active=True,
+
+        # The trip changes to BOARDING this many minutes before departure.
+        boarding_minutes_before=30,
+
+        # After reaching a terminal, the train waits this many minutes before starting the reverse journey.
+        turnaround_minutes=60,
     )
 
     # Reserved coaches: 1, 2 and 3.
@@ -141,24 +151,25 @@ def create_train_with_coaches_and_seats(
             coach_type=CoachType.RESERVED,
         )
 
-        # Ten seats per reserved coach.
+        # Ten reservable seats per reserved coach.
         for seat_number in range(1, 11):
-            seat = Seat(
-                seat_number=f"{seat_number:02d}",
+            coach.seats.append(
+                Seat(
+                    seat_number=f"{seat_number:02d}",
+                )
             )
-
-            coach.seats.append(seat)
 
         train.coaches.append(coach)
 
     # Unreserved coaches: 4 to 8.
+    # These coaches do not require individual seat records.
     for coach_number in range(4, 9):
-        coach = Coach(
-            coach_number=coach_number,
-            coach_type=CoachType.UNRESERVED,
+        train.coaches.append(
+            Coach(
+                coach_number=coach_number,
+                coach_type=CoachType.UNRESERVED,
+            )
         )
-
-        train.coaches.append(coach)
 
     db.add(train)
     db.flush()
@@ -166,58 +177,72 @@ def create_train_with_coaches_and_seats(
     return train
 
 
-def create_trips(
+def create_initial_trip(
     db: Session,
     train: Train,
     stations: list[Station],
-) -> None:
+) -> Trip:
     colombo = stations[0]
     badulla = stations[-1]
 
-    first_forward_departure = get_future_time(2)
-    reverse_departure = get_future_time(14)
-    second_forward_departure = get_future_time(26)
+    departure_time = get_future_time(2)
 
-    trips = [
-        Trip(
-            train_id=train.id,
-            start_station_id=colombo.id,
-            end_station_id=badulla.id,
-            departure_time=first_forward_departure,
-            arrival_time=(
-                first_forward_departure
-                + timedelta(hours=10)
-            ),
-            direction=TripDirection.FORWARD,
-            status=TripStatus.SCHEDULED,
+    initial_trip = Trip(
+        train_id=train.id,
+        start_station_id=colombo.id,
+        end_station_id=badulla.id,
+        departure_time=departure_time,
+        arrival_time=(
+            departure_time + timedelta(hours=10)
         ),
-        Trip(
-            train_id=train.id,
-            start_station_id=badulla.id,
-            end_station_id=colombo.id,
-            departure_time=reverse_departure,
-            arrival_time=(
-                reverse_departure
-                + timedelta(hours=10)
-            ),
-            direction=TripDirection.REVERSE,
-            status=TripStatus.SCHEDULED,
-        ),
-        Trip(
-            train_id=train.id,
-            start_station_id=colombo.id,
-            end_station_id=badulla.id,
-            departure_time=second_forward_departure,
-            arrival_time=(
-                second_forward_departure
-                + timedelta(hours=10)
-            ),
-            direction=TripDirection.FORWARD,
-            status=TripStatus.SCHEDULED,
-        ),
-    ]
+        direction=TripDirection.FORWARD,
+        status=TripStatus.SCHEDULED,
+    )
 
-    db.add_all(trips)
+    db.add(initial_trip)
+    db.flush()
+
+    return initial_trip
+
+
+def create_seed_data(
+    db: Session,
+) -> tuple[list[Station], Train, Trip]:
+    stations = create_stations(db)
+
+    train = create_train_with_coaches_and_seats(
+        db
+    )
+
+    initial_trip = create_initial_trip(
+        db=db,
+        train=train,
+        stations=stations,
+    )
+
+    return stations, train, initial_trip
+
+
+def print_seed_summary(
+    stations: list[Station],
+    train: Train,
+    initial_trip: Trip,
+) -> None:
+    print("Seed data created successfully.")
+    print(f"Stations: {len(stations)}")
+    print(f"Train: {train.train_number} - {train.name}")
+    print("Reserved coaches: 3")
+    print("Unreserved coaches: 5")
+    print("Reserved seats: 30")
+    print("Initial scheduled trips: 1")
+    print(
+        "Initial direction: "
+        f"{initial_trip.direction.value}"
+    )
+    print(
+        "Initial departure: "
+        f"{initial_trip.departure_time}"
+    )
 
 
 def seed_database() -> None:
@@ -236,26 +261,17 @@ def seed_database() -> None:
                 )
                 return
 
-            stations = create_stations(db)
-
-            train = create_train_with_coaches_and_seats(
-                db
-            )
-
-            create_trips(
-                db,
-                train,
-                stations,
+            stations, train, initial_trip = (
+                create_seed_data(db)
             )
 
             db.commit()
 
-            print("Seed data created successfully.")
-            print(f"Stations: {len(stations)}")
-            print("Reserved coaches: 3")
-            print("Unreserved coaches: 5")
-            print("Reserved seats: 30")
-            print("Trips: 3")
+            print_seed_summary(
+                stations=stations,
+                train=train,
+                initial_trip=initial_trip,
+            )
 
         except Exception:
             db.rollback()
@@ -267,22 +283,18 @@ def reset_and_seed_database() -> None:
         try:
             clear_database(db)
 
-            stations = create_stations(db)
-
-            train = create_train_with_coaches_and_seats(
-                db
-            )
-
-            create_trips(
-                db,
-                train,
-                stations,
+            stations, train, initial_trip = (
+                create_seed_data(db)
             )
 
             db.commit()
 
-            print(
-                "Database reset and seeded successfully."
+            print("Database reset successfully.")
+
+            print_seed_summary(
+                stations=stations,
+                train=train,
+                initial_trip=initial_trip,
             )
 
         except Exception:
