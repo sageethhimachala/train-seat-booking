@@ -937,3 +937,93 @@ button:disabled {
     grid-template-columns: 1fr;
   }
 }
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  padding: 20px;
+  display: grid;
+  place-items: center;
+  background: rgba(8, 24, 21, 0.58);
+  backdrop-filter: blur(4px);
+  animation: modal-fade-in 160ms ease-out;
+}
+
+.confirmation-modal {
+  width: min(100%, 480px);
+  padding: 28px;
+  border: 1px solid #e7d4d4;
+  border-radius: 18px;
+  background: white;
+  box-shadow: 0 25px 70px rgba(10, 28, 25, 0.28);
+  animation: modal-slide-in 180ms ease-out;
+}
+
+.confirmation-modal-icon {
+  width: 52px;
+  height: 52px;
+  margin-bottom: 18px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #fff0f0;
+  color: #b53333;
+  font-size: 1.5rem;
+  font-weight: 900;
+}
+
+.confirmation-modal-content h2 {
+  margin: 0;
+  color: #172033;
+  font-size: 1.4rem;
+}
+
+.confirmation-modal-content p {
+  margin: 12px 0 0;
+  color: #687487;
+  line-height: 1.65;
+}
+
+.confirmation-modal-actions {
+  margin-top: 26px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modal-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (max-width: 480px) {
+  .confirmation-modal {
+    padding: 22px;
+  }
+
+  .confirmation-modal-actions {
+    flex-direction: column-reverse;
+  }
+
+  .confirmation-modal-actions button {
+    width: 100%;
+  }
+}

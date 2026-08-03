@@ -6,6 +6,8 @@ import BookingDetails from "../components/BookingDetails";
 import BookingLookupForm from "../components/BookingLookupForm";
 import { cancelBooking, getBooking } from "../services/bookingService";
 
+import ConfirmationModal from "../components/ConfirmationModal";
+
 export default function ManageBookingPage({ initialBookingReference = "" }) {
   const [booking, setBooking] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -13,6 +15,8 @@ export default function ManageBookingPage({ initialBookingReference = "" }) {
 
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
+  const [cancellationModalOpen, setCancellationModalOpen] = useState(false);
 
   const lastAutomaticReference = useRef("");
 
@@ -46,16 +50,24 @@ export default function ManageBookingPage({ initialBookingReference = "" }) {
     }
   }
 
-  async function handleCancel() {
-    if (!booking) {
+  function openCancellationModal() {
+    if (!booking || cancelling) {
       return;
     }
 
-    const confirmed = window.confirm(
-      "Are you sure you want to cancel this booking?",
-    );
+    setCancellationModalOpen(true);
+  }
 
-    if (!confirmed) {
+  function closeCancellationModal() {
+    if (cancelling) {
+      return;
+    }
+
+    setCancellationModalOpen(false);
+  }
+
+  async function handleConfirmCancellation() {
+    if (!booking) {
       return;
     }
 
@@ -67,6 +79,7 @@ export default function ManageBookingPage({ initialBookingReference = "" }) {
       const updatedBooking = await cancelBooking(booking.booking_reference);
 
       setBooking(updatedBooking);
+      setCancellationModalOpen(false);
 
       setSuccessMessage("The booking was cancelled successfully.");
     } catch (requestError) {
@@ -106,7 +119,21 @@ export default function ManageBookingPage({ initialBookingReference = "" }) {
       <BookingDetails
         booking={booking}
         cancelling={cancelling}
-        onCancel={handleCancel}
+        onCancel={openCancellationModal}
+      />
+      <ConfirmationModal
+        open={cancellationModalOpen}
+        title="Cancel this booking?"
+        message={
+          booking
+            ? `Booking ${booking.booking_reference} will be cancelled and the reserved seat will become available for this journey segment. This action cannot be undone.`
+            : ""
+        }
+        confirmText="Yes, cancel booking"
+        cancelText="Keep booking"
+        loading={cancelling}
+        onConfirm={handleConfirmCancellation}
+        onCancel={closeCancellationModal}
       />
     </main>
   );
