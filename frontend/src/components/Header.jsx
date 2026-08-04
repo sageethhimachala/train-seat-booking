@@ -8,13 +8,11 @@ export default function Header({ activePage, onNavigate }) {
           onClick={() => onNavigate("booking")}
           aria-label="Go to booking page"
         >
-          <span className="brand-mark" aria-hidden="true">
-            TS
-          </span>
+          <img src="/favicon.svg" alt="TrainSeat logo" className="brand-logo" />
 
           <span className="brand-text">
             <strong>TrainSeat</strong>
-            <small>Segment-based reserved seat booking</small>
+            <small>segment based reserved seat booking</small>
           </span>
         </button>
 

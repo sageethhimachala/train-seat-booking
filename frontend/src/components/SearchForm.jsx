@@ -46,7 +46,7 @@ export default function SearchForm({ stations, loading, onSearch }) {
 
         <div>
           <h2>Plan your journey</h2>
-          <p>Select the stations for your reserved-seat journey.</p>
+          <p>Select the stations for your reserved seat journey.</p>
         </div>
       </div>
 
@@ -64,7 +64,7 @@ export default function SearchForm({ stations, loading, onSearch }) {
 
               {originOptions.map((station) => (
                 <option key={station.id} value={station.id}>
-                  {station.name} ({station.code})
+                  {station.name}
                 </option>
               ))}
             </select>

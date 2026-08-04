@@ -125,7 +125,7 @@ export default function BookingPage({ onManageBooking }) {
   return (
     <main className="page-container">
       <section className="hero">
-        <span className="eyebrow">Colombo Fort–Badulla railway line</span>
+        <span className="eyebrow">Colombo Fort to Badulla railway line</span>
 
         <h2>Reserve one seat for exactly the journey you travel</h2>
 

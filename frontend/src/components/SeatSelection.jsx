@@ -83,7 +83,7 @@ export default function SeatSelection({
                   <span>{seats.length} seats available</span>
                 </div>
 
-                <span className="coach-direction">Front of train →</span>
+                {/* <span className="coach-direction">Front of train →</span> */}
               </div>
 
               <div className="coach-shell">

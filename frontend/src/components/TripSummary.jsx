@@ -18,7 +18,7 @@ export default function TripSummary({ availability }) {
           <span className="eyebrow">Earliest train with available seats</span>
 
           <h3>
-            {trip.train_number} — {trip.train_name}
+            {trip.train_number} : {trip.train_name}
           </h3>
         </div>
 

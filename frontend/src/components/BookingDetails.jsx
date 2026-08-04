@@ -74,7 +74,7 @@ export default function BookingDetails({ booking, cancelling, onCancel }) {
           <span>Train</span>
 
           <strong>
-            {booking.trip.train_number} — {booking.trip.train_name}
+            {booking.trip.train_number} : {booking.trip.train_name}
           </strong>
         </div>
 
