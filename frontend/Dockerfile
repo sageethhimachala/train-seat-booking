@@ -21,7 +21,8 @@ RUN npm run build
 # Stage 2: Serve the production build with Nginx.
 FROM nginx:stable-alpine
 
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY default.conf.template \
+    /etc/nginx/templates/default.conf.template
 
 COPY --from=build \
     /app/dist \
