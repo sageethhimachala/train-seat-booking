@@ -19,7 +19,7 @@ docker compose version
 ## Clone the Repository
 
 ```bash
-git clone https://github.com/<your-username>/train-seat-booking.git
+git clone https://github.com/sageethhimachala/train-seat-booking.git
 
 cd train-seat-booking
 ```
@@ -224,3 +224,15 @@ Project images:
 ```bash
 docker images | grep train-seat-booking
 ```
+
+## 🚀 Live Demo
+
+The application is deployed on AWS using Docker, Amazon EC2, Amazon RDS, and an Application Load Balancer.
+
+**Live Application:**
+
+http://train-booking-alb-93566483.ap-southeast-2.elb.amazonaws.com/
+
+## ERD
+
+![Database](assets/train-seat-booking-erd.svg)
