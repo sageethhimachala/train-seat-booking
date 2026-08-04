@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000/api/v1",
+  baseURL: import.meta.env.VITE_API_BASE_URL || "/api/v1",
 
   headers: {
     "Content-Type": "application/json",
@@ -11,16 +11,14 @@ const apiClient = axios.create({
 });
 
 export function getApiErrorMessage(error) {
-  if (error.response?.data?.detail) {
-    const detail = error.response.data.detail;
+  const detail = error.response?.data?.detail;
 
-    if (typeof detail === "string") {
-      return detail;
-    }
+  if (typeof detail === "string") {
+    return detail;
+  }
 
-    if (Array.isArray(detail)) {
-      return detail.map((item) => item.msg).join(", ");
-    }
+  if (Array.isArray(detail)) {
+    return detail.map((item) => item.msg).join(", ");
   }
 
   if (error.code === "ECONNABORTED") {
@@ -28,9 +26,7 @@ export function getApiErrorMessage(error) {
   }
 
   if (error.request) {
-    return (
-      "The server could not be reached. " + "Make sure the backend is running."
-    );
+    return "The server could not be reached. " + "Please try again shortly.";
   }
 
   return error.message || "An unexpected error occurred.";
