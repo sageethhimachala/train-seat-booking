@@ -236,3 +236,66 @@ http://train-booking-alb-93566483.ap-southeast-2.elb.amazonaws.com/
 ## ERD
 
 ![Database](assets/train-seat-booking-erd.svg)
+
+## 🧪 Running Tests
+
+### Backend Tests
+
+Make sure PostgreSQL is running:
+
+```bash
+sudo systemctl start postgresql
+```
+
+Create a separate test database if it does not already exist:
+
+```sql
+CREATE DATABASE train_booking_test;
+```
+
+Set the test database URL:
+
+```bash
+export TEST_DATABASE_URL="postgresql+psycopg2://postgres:YOUR_PASSWORD@localhost:5432/train_booking_test"
+```
+
+Navigate to the backend and activate the virtual environment:
+
+```bash
+cd backend
+source venv/bin/activate
+```
+
+Run all backend tests:
+
+```bash
+pytest
+```
+
+---
+
+### Frontend Tests
+
+Navigate to the frontend:
+
+```bash
+cd frontend
+```
+
+Install dependencies if they have not already been installed:
+
+```bash
+npm install
+```
+
+Run all frontend tests:
+
+```bash
+npm test
+```
+
+Run tests in watch mode during development:
+
+```bash
+npm run test:watch
+```
