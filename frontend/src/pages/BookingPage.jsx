@@ -135,8 +135,6 @@ export default function BookingPage({ onManageBooking }) {
         </p>
       </section>
 
-      <Alert type="error" message={error} onClose={() => setError("")} />
-
       <SearchForm
         stations={stations}
         loading={searchingAvailability}
@@ -161,6 +159,8 @@ export default function BookingPage({ onManageBooking }) {
         loading={creatingBooking}
         onSubmit={handleCreateBooking}
       />
+
+      <Alert type="error" message={error} onClose={() => setError("")} />
     </main>
   );
 }

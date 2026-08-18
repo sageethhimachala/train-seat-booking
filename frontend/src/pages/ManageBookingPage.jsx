@@ -102,14 +102,6 @@ export default function ManageBookingPage({ initialBookingReference = "" }) {
         </p>
       </section>
 
-      <Alert type="error" message={error} onClose={() => setError("")} />
-
-      <Alert
-        type="success"
-        message={successMessage}
-        onClose={() => setSuccessMessage("")}
-      />
-
       <BookingLookupForm
         loading={loading}
         onSubmit={handleLookup}
@@ -134,6 +126,14 @@ export default function ManageBookingPage({ initialBookingReference = "" }) {
         loading={cancelling}
         onConfirm={handleConfirmCancellation}
         onCancel={closeCancellationModal}
+      />
+
+      <Alert type="error" message={error} onClose={() => setError("")} />
+
+      <Alert
+        type="success"
+        message={successMessage}
+        onClose={() => setSuccessMessage("")}
       />
     </main>
   );

@@ -92,7 +92,7 @@ export default function SearchForm({ stations, loading, onSearch }) {
 
               {destinationOptions.map((station) => (
                 <option key={station.id} value={station.id}>
-                  {station.name} ({station.code})
+                  {station.name}
                 </option>
               ))}
             </select>
